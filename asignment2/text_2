@@ -1,0 +1,51 @@
+size(500,500);
+background(0);
+float ok;
+for(int x=10;x<=490;x+=26){
+  ok=random(2);
+  for(int y=10;y<=490;y+=20){
+    float result=random(2);
+    if(ok>=1.7){
+      result=1.2;
+    }
+    if(result>=1.2){
+      float choose=random(3.7);
+      println(choose);
+      if(choose<2.5&&choose>=2){
+        noStroke();
+        rectMode(CENTER);
+        fill(183,50,50);
+        rect(x,y,20,20);
+        fill(103,7,7);
+        rect(x+13,y,6,20);
+      }
+      if(choose<2&&choose>=0){
+        noStroke();
+        rectMode(CENTER);
+        fill(247,172,26);
+        rect(x,y,20,20);
+        fill(157,154,40);
+        rect(x+13,y,6,20);
+      }
+      if(choose<3&&choose>=2.5){
+        noStroke();
+        rectMode(CENTER);
+        fill(175,281,181);
+        rect(x,y,20,20);
+        fill(40,147,78);
+        rect(x+13,y,6,20);
+      }
+      if(choose<3.7&&choose>=3){
+        noStroke();
+        rectMode(CENTER);
+        fill(250);
+        rect(x,y,20,20);
+        fill(200);
+        rect(x+13,y,6,20);
+      }
+      if(ok>=1.7){
+      y+=20;
+    }
+    }
+  }
+}
