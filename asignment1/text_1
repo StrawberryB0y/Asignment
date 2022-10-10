@@ -1,0 +1,50 @@
+float posx=25;
+float posy=25;
+
+void setup(){
+  size(550,550);
+  background(250);
+}
+
+void draw(){
+  float rot=random(4);
+  drawPic(posx,posy,rot);
+  posx+=50;
+  if(posx>550){
+    posx=25;
+    posy+=50;
+  }
+  
+}
+void drawPic(float x,float y,float rot){
+  float ang=0;
+  if(rot>=0&&rot<1){
+    x-=25;
+    y-=25;
+  }
+  if(rot>=1&&rot<2){
+    x+=25;
+    y-=25;
+    ang=HALF_PI;
+  }
+  if(rot>=2&&rot<3){
+    x-=25;
+    y+=25;
+    ang=3*HALF_PI;
+  }
+  if(rot>=3&&rot<4){
+    x+=25;
+    y+=25;
+    ang=PI;
+  }
+  noFill();
+  strokeWeight(5);
+  stroke(95,187,random(200,220),random(250));
+  int rad=int(random(5));
+  arc(x,y,5,5,ang+0,ang+HALF_PI);
+  arc(x,y,20,20,ang+0,ang+HALF_PI);
+  arc(x,y,40,40,ang+0,ang+HALF_PI);
+  arc(x,y,60,60,ang+0,ang+HALF_PI);
+  arc(x,y,100,100,ang+0,ang+HALF_PI);
+
+}
