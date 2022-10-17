@@ -1,0 +1,38 @@
+class Particle{
+  PVector pos;
+  PVector destination;
+  Particle(int x,int y,PVector l){
+    pos=new PVector();
+    pos.x=x;
+    pos.y=y;
+    destination=l;
+  }
+  void display(){
+    fill(img.get((int)destination.x,(int)destination.y));
+    noStroke();
+    ellipse(pos.x,pos.y,10,10);
+  }
+  void move(){
+    if(pos.x<destination.x){
+      pos.x+=1;
+      
+    }
+    else if(pos.x>destination.x){
+     pos.x-=1;
+    }
+    if(pos.y<destination.y){
+      pos.y+=1;
+    
+    }
+    else if(pos.y>destination.y){
+      pos.y-=1;
+    }
+  }
+
+  void drop(){
+    if(pos.y<=height+10){
+      pos.x+=random(-5,5);
+      pos.y+=random(1,8);  
+    }
+  } 
+}
