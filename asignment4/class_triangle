@@ -1,0 +1,30 @@
+class Triangle{
+  PVector[] triVertex;
+  boolean drawShape;
+  
+  Triangle(PVector p1,PVector p2,PVector p3){
+    triVertex=new PVector[3];
+    triVertex[0] = p1;
+    triVertex[1] = p2;
+    triVertex[2] = p3;
+  }
+  
+  void run(){
+    if(drawShape){
+      drawTri();
+    } 
+  }
+  
+  void drawTri(){
+    beginShape(TRIANGLE);
+    noStroke();
+    for(int i=0;i<triVertex.length;i++){
+      float c=map(triVertex[i].z,0,sectionHeight*heightSection,0,250);
+      float _Color=map(triVertex[i].z,0,sectionHeight*heightSection,0,Color);
+      fill(c,_Color,_Color);
+      vertex(triVertex[i].x, triVertex[i].y, triVertex[i].z);
+    }
+    endShape();
+  }
+  
+}
