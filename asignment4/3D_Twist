@@ -1,0 +1,107 @@
+int sectionSideNum=10;
+int sideDivison=40;
+int heightSection=200;
+float sectionHeight=10;
+float twistRange=PI;
+float twistStart=0;
+float hollowRate=1;
+float bellyNum=1;
+float sectionR=100;
+float Color=0;
+float sectionTwist=TWO_PI;
+float crystallizationRate=0;
+boolean record=false;
+
+float[] heightSectionR;
+
+
+
+void setup(){
+  size(1300,800,P3D);
+  
+  UI();
+  setSystem();
+ 
+}
+
+void setSystem(){
+  initiate();
+  build(vp);
+  
+  for(Triangle t: triangles){
+    if(random(1)<hollowRate){
+      t.drawShape=true;
+    }
+    else{
+      t.drawShape=false;
+    }
+  }
+}
+
+void draw(){
+  background(50);
+  lights();
+  cam.beginHUD();
+  slider.draw();
+  cam.endHUD();
+  if ((mouseX<360 && mouseY< 380)) {
+    cam.setActive(false);
+  } else {
+    cam.setActive(true);
+  }
+  if (record) {
+    
+    beginRaw(DXF, "3D_cylinder.dxf");
+  }
+  for(Triangle t:triangles){
+    t.run();
+  }
+  
+  
+  if (record) {
+    endRaw();
+    record = false;
+  }
+}
+
+void initiate(){
+  float theta=TWO_PI/sectionSideNum;
+  float gama=bellyNum*sectionTwist/heightSection;
+  heightSectionR=new float[heightSection];
+  for(int i=0;i<heightSection;i++){
+    heightSectionR[i]=sectionR+50*sin(twistStart+gama*i);
+  }
+  
+  vp=new PVector[heightSection][sectionSideNum];
+  for(int i=0;i<heightSection;i++){
+    float twistPhase=twistRange/heightSection;
+    for(int j=0;j<sectionSideNum;j++){
+      float crystallization=random(-crystallizationRate,crystallizationRate);
+      float x=heightSectionR[i]*cos(theta*j+twistPhase*i)+crystallization;
+      float y=heightSectionR[i]*sin(theta*j+twistPhase*i)+crystallization;
+      float z=sectionHeight*i;
+      
+      vp[i][j]=new PVector(x,y,z);
+    }
+  }
+}
+
+void build(PVector[][] d) {
+  triangles = new ArrayList<Triangle>();
+  for (int i = 0; i < d.length-1; i ++) {
+    for (int j = 0; j <d[0].length; j ++) {
+      PVector p1 = new PVector(d[i][j].x, d[i][j].y,d[i][j].z);
+      PVector p2 = new PVector(d[i+1][j].x,d[i+1][j].y, d[i+1][j].z);
+      PVector p3 = new PVector(d[i][(j+1)%d[0].length].x, d[i][(j+1)%d[0].length].y, d[i][(j+1)%d[0].length].z);
+      PVector p4 = new PVector(d[i+1][(j+1)%d[0].length].x, d[i+1][(j+1)%d[0].length].y, d[i+1][(j+1)%d[0].length].z);
+      triangles.add(new Triangle(p1, p3, p2));
+      triangles.add(new Triangle(p2, p3, p4));
+    }
+  }
+}
+
+void keyPressed() {
+  if (key == 's') {
+    record = true;
+  }
+}
