@@ -1,0 +1,92 @@
+import controlP5.*;
+import peasy.*;
+
+ControlP5 slider;
+PeasyCam cam;
+
+void UI(){
+  int sliderWidth=30;
+  int sliderHeight=300;
+  
+  cam=new PeasyCam(this,800);
+  slider=new ControlP5(this,createFont("微软雅黑",14));
+  
+  slider.addSlider("heightSection")
+    .setPosition(20,20)
+    .setSize(sliderHeight,sliderWidth)
+    .setRange(1,200)
+    .setValue(36)
+    ;
+  slider.addSlider("twistStart")
+    .setPosition(20,60)
+    .setSize(sliderHeight,sliderWidth)
+    .setRange(0,TWO_PI)
+    .setValue(0)
+    ;
+   slider.addSlider("bellyNum")
+    .setPosition(20,100)
+    .setSize(sliderHeight,sliderWidth)
+    .setRange(1,5)
+    .setValue(1)
+    ;
+    
+    slider.addSlider("sectionSideNum")
+    .setPosition(20,140)
+    .setSize(sliderHeight,sliderWidth)
+    .setRange(3,30)
+    .setValue(30)
+    ;
+    
+    slider.addSlider("hollowRate")
+    .setPosition(20,180)
+    .setSize(sliderHeight,sliderWidth)
+    .setRange(0,1)
+    .setValue(1)
+    ;
+    
+    slider.addSlider("twistRange")
+    .setPosition(20,220)
+    .setSize(sliderHeight,sliderWidth)
+    .setRange(0,10*TWO_PI)
+    .setValue(PI)
+    ;
+    
+    slider.addSlider("sectionR")
+    .setPosition(20,260)
+    .setSize(sliderHeight,sliderWidth)
+    .setRange(60,400)
+    .setValue(100)
+    ;
+    
+     slider.addSlider("Color")
+    .setPosition(20,300)
+    .setSize(sliderHeight,sliderWidth)
+    .setRange(0,250)
+    .setValue(250)
+    ;
+    
+     slider.addSlider("crystallizationRate")
+    .setPosition(20,340)
+    .setSize(sliderHeight,sliderWidth)
+    .setRange(0,50)
+    .setValue(0)
+    ;
+    
+    
+ 
+    slider.setAutoDraw(false);
+}
+
+void controlEvent(ControlEvent theEvent) {
+  if (theEvent.isFrom(slider.getController("heightSection"))||
+  theEvent.isFrom(slider.getController("twistStart"))||
+  theEvent.isFrom(slider.getController("bellyNum"))||
+  theEvent.isFrom(slider.getController("sectionSideNum"))||
+  theEvent.isFrom(slider.getController("hollowRate"))||
+  theEvent.isFrom(slider.getController("twistRange"))||
+  theEvent.isFrom(slider.getController("sectionR"))||
+  theEvent.isFrom(slider.getController("Color"))||
+  theEvent.isFrom(slider.getController("crystallizationRate"))) {
+    setSystem();
+  }
+}
