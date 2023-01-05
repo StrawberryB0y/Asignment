@@ -1,0 +1,89 @@
+class Particle{
+  PVector location;
+  PVector velocity;
+  PVector acceleration;
+  float friction;
+  float mass;
+  float G;
+  float r;
+  PVector max;
+  PVector min;
+  float dire;
+  
+  Particle(){
+    r=5;
+    location=new PVector(0,0);
+    velocity=new PVector(0,0);
+    acceleration=new PVector(0,0);
+    friction=0.01;
+    min=new PVector(0,0);
+    max=new PVector(width,height);
+    dire=1;
+    mass=1;
+    G=1;
+  }
+  
+  void update(){
+    //float u=velocity.mag()/50;
+    //friction=velocity.normalize().mult(u);
+   
+    velocity.add(acceleration);
+    velocity.mult(1-friction);
+    location.add(velocity);
+    acceleration.set(0,0);
+    show();
+  }
+  
+  void bounceOffWalls() {
+        if (location.x+r> max.x) {
+           
+           velocity.x *= -1; 
+        }
+
+        if (location.x-r/2< min.x) {
+           
+           velocity.x *= -1; 
+        }
+
+        if (location.y+r> max.y) {
+            
+            velocity.y *= -1;
+        }
+
+        if (location.y-r < min.y) {
+            
+            velocity.y *= -1;
+        }
+    }
+   
+  void show(){
+    ellipseMode(CENTER);
+    ellipse(location.x, location.y,r,r);
+  }
+  
+   void addForce(PVector force) {
+        force.div(mass);
+        acceleration.add(force);
+    }
+  
+   void attract(PVector object,float _mass,float min,float max) {
+      float distance = PVector.dist(object, location);
+      distance = constrain(distance, min, max);
+      float strength = G * (mass * _mass) / (distance * distance);
+      PVector force = PVector.sub(object, location);
+      force.normalize();
+      force.mult(strength);
+      addForce(force);
+   }
+   void mouseAttract(PVector center, float _mass, float min, float max) {
+      float distance = PVector.dist(center, location);
+      distance = constrain(distance, min, max);
+      float strength = G * (mass * _mass) / (distance * distance);
+      PVector force = PVector.sub(center, location);
+      force.normalize();
+      force.mult(strength);
+      addForce(force);
+   }
+  
+   
+}
