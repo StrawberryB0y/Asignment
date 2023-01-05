@@ -1,0 +1,58 @@
+class NeuralNetwork{
+  Neuron[][] network;
+  NeuralNetwork(int[] layerSizes){
+    network = new Neuron[layerSizes.length][];
+    for(int i=0;i<layerSizes.length;i++){
+      network[i] = new Neuron[layerSizes[i]];
+      for(int j=0;j<layerSizes[i];j++){
+        if(i==0){
+          network[i][j] = new Neuron(null,true);
+        }else if(i<layerSizes.length-1){
+          network[i][j] = new Neuron(network[i-1],true);
+        }else{
+          network[i][j] = new Neuron(network[i-1],false);
+        }
+      }
+    }
+  }
+  
+  float[] predict(float[] input){
+    for(int j=0;j<network[0].length;j++){
+      network[0][j].value = input[j];
+    }
+    for(int i=1;i<network.length;i++){
+      for(int j=0;j<network[i].length;j++){
+        network[i][j].update();
+      }
+    }
+    float[] output=new float[network[network.length-1].length];
+    for(int j=0;j<network[network.length-1].length;j++){
+      output[j] = network[network.length-1][j].value;
+    }
+    
+    return output;
+  }
+  
+  void learn(float[] input, float[] output){
+    float[] prediction = predict(input);
+    float[] gradient = new float[prediction.length];
+    for(int i=0;i<gradient.length;i++){
+      gradient[i] = output[i]-prediction[i];
+      network[network.length-1][i].addGradient(gradient[i]);
+    }   
+    for(int i=network.length-1;i>0;i--){
+      for(int j=0;j<network[i].length;j++){
+        network[i][j].backprop();
+      }
+    }
+  }
+}
+
+static float sigmoid(float x){
+  float sigx=activation(x);
+  return sigx*(1-sigx);
+}
+
+static float activation(float x){
+  return 1/(1+exp(-x));
+}
