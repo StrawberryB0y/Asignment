@@ -1,0 +1,192 @@
+NeuralNetwork Net; 
+ArrayList<float[]> Sdata; 
+ArrayList<float[]> Slabels; 
+int[] layerSizes = {2,8,2};
+float stepSize=0.001;
+
+void setup(){
+  fullScreen();
+  Net = new NeuralNetwork(layerSizes);
+  Sdata = new ArrayList<float[]>();
+  Slabels = new ArrayList<float[]>();
+}
+
+void draw(){
+  background(255); 
+  int time0=millis();
+  if(Sdata.size()>0&&!paused){
+    while(millis()-time0<13){
+      train(50);
+    }
+  }
+  noStroke();
+  drawS(16);
+}
+
+float f(float x){
+  return sin(x);
+}
+
+void drawZero(){
+  line(0,0,width,0);
+}
+
+void drawF(){
+  ArrayList<Float> outputs= new ArrayList<Float>();
+  float[] data = new float[1];
+  for(float i=0;i<2*PI;i+=0.1){
+    data[0] = i;
+    outputs.add(f(data[0]));
+    if(i!=0){
+      line(i-0.1,-outputs.get(outputs.size()-2),i,-outputs.get(outputs.size()-1));
+    }
+  }
+}
+
+void drawS(int sqSide){
+  int i=0;
+  for(float[] data : Sdata){
+    if(Slabels.get(i)[0]>Slabels.get(i)[1]){
+      fill(255,0,0);
+    }else{
+      fill(0,255,0);
+    }
+    ellipse((1+data[0])/2*width,(1+data[1])/2*height,10,10);
+    i++;
+  }
+  for(int x=0;x<ceil(1+width/sqSide);x++){
+    for(int y=0;y<ceil(1+height/sqSide);y++){
+      int posX,posY;
+      posX=x*sqSide;
+      posY=y*sqSide;
+      float[] input=new float[2];
+      input[0] = -1+2*float(posX)/width;
+      input[1] = -1+2*float(posY)/height;
+      float[] classPrediction = Net.predict(input);
+      float classDif = pow(abs(classPrediction[0]-classPrediction[1]),0.3);
+      float a=random(150);
+      float b=random(150);
+      float c=random(150);
+      float d=random(150);
+      if(classPrediction[0]>classPrediction[1]){
+        fill(255*classDif,a,b,80);
+      }else{
+        fill(c,255*classDif,d,80);
+      }
+      rect(posX,posY,sqSide,sqSide);
+      
+    }
+  }
+}
+
+void train(int times){
+  for(int i=0;i<max(1,times/ceil(Sdata.size()));i++){
+    for(int j=0;j<Sdata.size();j++){
+      float[] data = Sdata.get(j);
+      float[] label = Slabels.get(j);
+      Net.learn(data,label);
+    }
+  }
+}
+
+void trainMiniBatch(int times){
+  for(int i=0;i<max(1,times/ceil(Sdata.size()));i++){
+    ArrayList<float[]> dataBatchGreen = new ArrayList<float[]>();
+    ArrayList<float[]> labelsBatchGreen = new ArrayList<float[]>();
+    ArrayList<float[]> dataBatchRed = new ArrayList<float[]>();
+    ArrayList<float[]> labelsBatchRed = new ArrayList<float[]>();
+    for(int j=0;j<Sdata.size();j++){
+      if(Slabels.get(j)[0]==1f){
+        dataBatchGreen.add(Sdata.get(j));
+        labelsBatchGreen.add(Slabels.get(j));
+      }else{
+        dataBatchRed.add(Sdata.get(j));
+        labelsBatchRed.add(Slabels.get(j));
+      }
+    }
+    while(dataBatchGreen.size()>0 && dataBatchRed.size()>0){
+      if(dataBatchGreen.size()>0){
+        int j=round(random(0,dataBatchGreen.size()-1));
+        float[] data = dataBatchGreen.get(j);
+        float[] label = labelsBatchGreen.get(j);
+        Net.learn(data,label);
+        dataBatchGreen.remove(j);
+        labelsBatchGreen.remove(j);
+      }
+      if(dataBatchRed.size()>0){
+        int j=round(random(0,dataBatchRed.size()-1));
+        float[] data = dataBatchRed.get(j);
+        float[] label = labelsBatchRed.get(j);
+        Net.learn(data,label);
+        dataBatchRed.remove(j);
+        labelsBatchRed.remove(j);
+      }
+    }
+  }
+}
+
+boolean lMouse = false;
+boolean rMouse = false;
+boolean paused=false;
+
+void keyPressed(){
+  if(key=='p'){
+    paused=!paused;
+  }
+  if(key=='r'){
+    for(int i=0;i<20;i++){
+      float[] position = new float[2];
+      position[0] = random(-1,1);
+      position[1] = random(-1,1);
+      float[] label = new float[2];
+      label[0]=round(random(0,1));
+      label[1]=1-label[0];
+      Sdata.add(position);
+      Slabels.add(label);
+    }
+  }
+  if(key=='c'){
+    Sdata.clear();
+    Slabels.clear();
+    Net = new NeuralNetwork(layerSizes);
+  }
+}
+void mousePressed(){
+  if(mouseButton==LEFT){
+    if(!lMouse){
+      lMouse=true;
+      float[] position = new float[2];
+      position[0] =-1+2*float(mouseX)/width;
+      position[1] = -1+2*float(mouseY)/height;
+      float[] label = new float[2];
+      label[0]=1f;
+      label[1]=0f;
+      Sdata.add(position);
+      Slabels.add(label);
+    }
+  }else if(mouseButton==RIGHT){
+    if(!rMouse){
+      rMouse=true;
+      float[] position = new float[2];
+      position[0] = -1+2*float(mouseX)/width;
+      position[1] = -1+2*float(mouseY)/height;
+      float[] label = new float[2];
+      label[0]=0f;
+      label[1]=1f;
+      Sdata.add(position);
+      Slabels.add(label);
+    }
+  }
+}
+
+void mouseReleased(){
+  if(mouseButton==LEFT){
+    if(lMouse){
+      lMouse=false;
+    }
+  }else if(mouseButton==RIGHT){
+    if(rMouse){
+      rMouse=false;
+    }
+  }
+}
