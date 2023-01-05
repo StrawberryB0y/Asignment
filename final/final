@@ -1,0 +1,355 @@
+PImage img;
+color brushColor;
+color[] colArr;
+int[] score;
+float b_r;
+float b_t;
+int indexValue;
+int f_switch;
+color pre_col;
+boolean b_switch;
+boolean e_switch;
+boolean e_do;
+boolean m_switch;
+ArrayList<Particle> particles;
+int x,y;
+PVector d;
+boolean life;
+int step;
+boolean runP;
+int count;
+boolean d_switch;
+boolean cm_switch;
+float pre_b_t;
+
+void setup() {
+  size(600, 618);
+  UI();
+  img = loadImage("1.png");
+  colArr=new color[10];
+  score=new int[10];
+  indexValue=6;
+  f_switch=6;
+  e_do=false;
+  pre_col=color(255,255,255);
+  particles=new ArrayList<Particle>();
+  step=0;
+  life=true;
+  runP=false;
+  d_switch=false;
+  count=0;
+  reset();
+}
+
+void draw() {
+  if(pre_col!=brushColor&&f_switch==5){
+    background(203);
+    reset();
+    f_switch=6;
+  }
+  if(f_switch!=indexValue){
+    setFilter();
+  }
+  mosaic();
+  color_extractor();
+  if(runP){
+    ParticlesM();
+    check();
+  }
+  if(d_switch){
+    background(203);
+    dynamiccolor();
+  }
+ if(cm_switch){
+   colorMonitor();
+ }
+  
+}
+
+void reset(){
+  loadPixels(); 
+  img.loadPixels(); 
+  for (int y = 0; y < img.height; y++) {
+    for (int x = 0; x <img.width; x++) {
+      int imageloc = x + y*img.width;
+      float r = red(img.pixels[imageloc]);
+      float g = green(img.pixels[imageloc]);
+      float b = blue(img.pixels[imageloc]);
+      int canvasLoc=x+y*width;
+      pixels[canvasLoc] =  color(r,g,b);  
+    }
+  }
+  updatePixels();
+}
+
+void colorMonitor(){
+  background(203);
+  reset();
+  if((mouseX-50>0&&mouseX+50<img.width)&&(mouseY-50>0&&mouseY+50<img.height-1)){
+    color c=color(255,255,255);
+    int r=50;
+    float start=-TWO_PI/10;
+    float end=0;
+    for(float theta=0;theta<TWO_PI;theta+=TWO_PI/10){
+      int m_x=int(mouseX+r*cos(theta));
+      int m_y=int(mouseY+r*sin(theta));
+      if((m_x>0&&m_x<img.width)&&(m_y>0&&m_y<img.height-1)){
+      int imageLoc=m_x+m_y*img.width;
+      c=img.pixels[imageLoc];
+      fill(c,180);
+      stroke(0,150);
+      arc(mouseX,mouseY,r,r,start,end);
+      start+=TWO_PI/10;
+      end+=TWO_PI/10;
+      }
+    }
+  }
+}
+
+
+void mosaic(){
+  if(m_switch){
+    if((mouseX>0&&mouseX<img.width)&&(mouseY>0&&mouseY<img.height-1)){
+      int m_size=int(b_r);
+      int loc=mouseX+mouseY*img.width;
+      float r = red(img.pixels[loc]);
+      float g = green(img.pixels[loc]);
+      float b = blue(img.pixels[loc]);
+      noStroke();
+      fill(r,g,b,b_t);
+      rectMode(CENTER);
+      rect(mouseX/m_size*m_size,mouseY/m_size*m_size,m_size,m_size);
+      //ellipseMode(CENTER);
+      //ellipse(mouseX/m_size*m_size,mouseY/m_size*m_size,m_size,m_size);
+    }
+  }
+}
+
+
+void color_extractor(){
+  if(e_switch){
+    background(203);
+    reset();
+    color c=color(255,255,255);
+    if((mouseX>0&&mouseX<img.width)&&(mouseY>0&&mouseY<img.height-1)){
+      int imageLoc=mouseX+mouseY*img.width;
+      c=img.pixels[imageLoc];
+      fill(c);
+      noStroke();
+      rectMode(CORNERS);
+      rect(mouseX,mouseY,mouseX+50,mouseY-50);
+      //fill(brushColor);
+      //ellipse(mouseX,mouseY,10,10);
+      if(e_do){
+        brushColor=c;
+        cp5.addColorWheel("",370,25,200).setRGB(brushColor);
+        e_do=false;
+      }
+    }
+  }
+}
+
+
+void brush(){
+  if(b_switch){
+    if((mouseX>0&&mouseX<img.width)&&(mouseY>0&&mouseY<img.height-1)){
+      fill(brushColor,b_t);
+      noStroke();
+      ellipseMode(CENTER);
+    
+      ellipse(mouseX,mouseY,b_r,b_r);
+    }
+  }
+}
+
+void setFilter(){
+  if(indexValue==0){
+    PImage destination;
+    destination=createImage(img.width,img.height,RGB);
+    float threshold=127;
+    destination.loadPixels();
+    for(int x=0;x<img.width;x++){
+      for(int y=0;y<img.height;y++){
+        int loc=x+y*img.width;
+        destination.pixels[loc]=color(255*(brightness(img.pixels[loc]))/255);
+        
+      }
+    }
+    destination.updatePixels();
+    image(destination,0,0);
+    f_switch=0;
+  }
+  else if(indexValue==1){
+    background(203);
+    reset();
+    fill(247,230,37,50);
+    noStroke();
+    rect(0,0,float(img.width),float(img.height));
+    f_switch=1;
+    
+  }
+  else if(indexValue==2){
+    background(203);
+    reset();
+    fill(255,0,0,50);
+    noStroke();
+    rect(0,0,float(img.width),float(img.height));
+    f_switch=2;
+  }
+  else if(indexValue==3){
+    background(203);
+    reset();
+    fill(0,255,0,50);
+    noStroke();
+    rect(0,0,float(img.width),float(img.height));
+    f_switch=3;
+  }
+  else if(indexValue==4){
+    background(203);
+    reset();
+    fill(0,0,255,50);
+    noStroke();
+    rect(0,0,float(img.width),float(img.height));
+    f_switch=4;
+  }
+  else if(indexValue==5){
+    background(203);
+    reset();
+    fill(brushColor,50);
+    pre_b_t=b_t;
+    noStroke();
+    rect(0,0,float(img.width),float(img.height));
+    f_switch=5;
+    pre_col=brushColor;
+  }
+  else{
+    ;
+  }
+}
+
+void initParticles() {
+  for (int i = 0; i < 20; i++) {
+    x=(int)random(img.width);
+    y=(int)random(img.height);
+    d=new PVector(x,y);
+    int start_x=(int)random(img.width);
+    int start_y=0;
+    Particle p=new Particle(start_x,start_y,d);
+    particles.add(p);
+  }
+}
+void particlemove(){
+  life=true;
+  runP=true;
+  count=0;
+}
+
+void check(){
+  count++;
+  if(count>1050){
+    runP=false;
+  }
+}
+
+void ParticlesM(){
+  background(203);
+  if(particles.size()!=0){
+    for (int i = 0; i < particles.size(); i++) {
+      Particle p = particles.get(i);
+      if(life==true){
+        p.display();
+        p.move();
+      }
+    }
+  }
+  if(life==true){
+    if(particles.size()<6500){
+      initParticles();
+    }
+  }
+  if(life==false){
+   for (int i = 0; i < particles.size(); i++) {
+      Particle p = particles.get(i);
+      p.drop();
+      p.display(); 
+    }
+    step++;
+  }
+  if(step>=50){
+    for (int i = 0; i < particles.size(); i++) {
+      particles.remove(i);
+    }
+    step=0;
+  }
+}
+
+void Extractor(boolean flag){
+  e_switch=flag;
+}
+
+void Size(float r){
+  b_r=r;
+}
+
+void Transp(int t){
+  b_t=t;
+}
+
+void filter(int n){
+  indexValue=n;
+  println(indexValue);
+}
+
+void bruSwitch(boolean flag){
+    b_switch=flag;
+}
+
+void MSwitch(boolean flag){
+  m_switch=flag;
+}
+
+void clearCanvas(){
+  reset();
+}
+
+void dynamicCol(){
+  d_switch=true;
+}
+
+void dynamiccolor(){
+  loadPixels();
+  img.loadPixels(); 
+  for (int y = 0; y < img.height; y++) {
+    for (int x = 0; x <img.width; x++) {
+      int imageloc = x + y*img.width;
+      float r = red(img.pixels[imageloc]);
+      float g = green(img.pixels[imageloc]);
+      float b = blue(img.pixels[imageloc]);
+      int canvasLoc=x+y*width;
+      pixels[canvasLoc] =  color(brushColor,1);  
+    }
+  }
+  updatePixels();
+  d_switch=false;
+}
+
+void particledrop(){
+  count=800;
+  runP=true;
+  if(life==true){
+    life=false;
+  }
+}
+
+void monitorS(boolean flag){
+  cm_switch=flag;
+}
+
+void mouseClicked(){
+  e_do=true;
+}
+
+void mouseDragged(){
+  println(b_switch);
+  brush();
+}
