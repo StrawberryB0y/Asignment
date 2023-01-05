@@ -1,0 +1,55 @@
+class Neuron{
+  float[] weights;
+  float bias;
+  Neuron[] inputs;
+  float incomingGradient;
+  float value;
+  boolean activation;
+  Neuron(Neuron[] inputs0, boolean activationFunction){
+    activation = activationFunction;
+    if(inputs0==null){
+      return;
+    }
+    inputs = inputs0;
+    weights = new float[inputs.length];
+    for(int i=0;i<inputs.length;i++){
+      weights[i] = randomGaussian()/pow(inputs.length,0.5);
+    }
+    bias = 0;
+  }
+  
+  void update(){
+    if(inputs==null){return;}
+    incomingGradient=0;
+    value=0;
+    for(int i=0;i<inputs.length;i++){
+      value+=inputs[i].value*weights[i];
+    }
+    value+=bias;
+    if(activation){
+      value=activation(value);
+    }
+  }
+  
+  void addGradient(float incAdd){
+    incomingGradient+=incAdd;
+  }
+  
+  void backprop(){
+    float valueGrad;
+    if(activation){
+      valueGrad=sigmoidGradientAlready()*incomingGradient;
+    }else{
+      valueGrad=incomingGradient;
+    }
+    for(int i=0;i<inputs.length;i++){
+      inputs[i].addGradient(valueGrad*weights[i]);
+      weights[i]+=valueGrad*inputs[i].value*stepSize;
+    }
+    bias+=valueGrad*stepSize;
+  }
+  
+  float sigmoidGradientAlready(){
+    return value*(1-value);
+  }
+}
