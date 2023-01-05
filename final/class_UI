@@ -1,0 +1,78 @@
+import controlP5.*;
+ControlP5 cp5;
+
+void UI(){
+  cp5=new ControlP5(this,createFont("微软雅黑",13));
+  
+  cp5.addColorWheel("brushColor",370,25,200).setRGB(color(128,0,255));
+  
+  cp5=new ControlP5(this,createFont("微软雅黑",10));
+  cp5.addToggle("bruSwitch")
+     .setPosition(370,270)
+     .setSize(50,15)
+     .setValue(false)
+     .setMode(ControlP5.SWITCH)
+     ;
+  cp5.addToggle("Extractor")
+     .setPosition(510,270)
+     .setSize(50,15)
+     .setValue(false)
+     .setMode(ControlP5.SWITCH)
+     ;
+   cp5.addToggle("MSwitch")
+     .setPosition(440,270)
+     .setSize(50,15)
+     .setValue(false)
+     .setMode(ControlP5.SWITCH)
+     ;
+   
+   cp5=new ControlP5(this,createFont("微软雅黑",13));
+   cp5.addScrollableList("filter")
+      .setPosition(370,420)
+      .setSize(200,60)
+      .setBarHeight(20)
+      .setItemHeight(20)
+      .addItems(java.util.Arrays.asList("blackAndWhite","yellow","red","green","blue","customlize"))
+      ;
+      
+   cp5.addSlider("Size")
+      .setPosition(370,500)
+      .setSize(155,20)
+      .setRange(0,50)
+      .setValue(10)
+      ;
+   cp5.addSlider("Transp")
+      .setPosition(370,530)
+      .setSize(155,20)
+      .setRange(0,255)
+      .setValue(255)
+      ;
+      
+   cp5=new ControlP5(this,createFont("微软雅黑",9));   
+   cp5.addButton("clearCanvas")
+      .setValue(0)
+      .setPosition(370,320)
+      .setSize(90,30)
+      ;
+   cp5.addButton("dynamicCol")
+      .setValue(0)
+      .setPosition(480,320)
+      .setSize(90,30)
+      ;
+   cp5.addButton("particlemove")
+      .setValue(0)
+      .setPosition(370,360)
+      .setSize(90,30)
+      ;
+   cp5.addButton("particledrop")
+      .setValue(0)
+      .setPosition(480,360)
+      .setSize(90,30)
+      ;
+   cp5.addToggle("monitorS")
+     .setPosition(515,237)
+     .setSize(40,10)
+     .setValue(false)
+     .setMode(ControlP5.SWITCH)
+     ;
+}
